@@ -1,0 +1,71 @@
+LearnSwiftLA - Scripting 2/15/17
+
+** check out the latest SwiftCoders podcast with John Sundell for more on this
+
+What is a command line tool vs. a script? A script is code built and runs at the same time, can run only in the specific file or directory. A command line too is already built and runs binary, and can run anywhere. You build a script and then export it as a binary.
+
+$ cd /usr/local/bin and you can see your binaries.
+
+Look at https://github.com/garricn/MakeRepo for an example of script/binary
+This binary makes a github repo from the command line.
+
+To make a script:
+$ cd ~/Desktop/
+$ mkdir MyFirstScript
+$ cd MyFirstScript
+$ touch main.swift (or vim main.swift) ** have to have main.swift file for script/binary
+
+In main.swift:
+Top line must be #!/usr/bin/swift -- even when you're using Xcode. Basically, this is the swift part of $ swift ./main.swift, and tells the command line to run swift before your file. If you compile the script, this line becomes unnecessary. It's called the shebang, basically says, "I want to run swift"
+
+import Foundation
+print("Hello World!")
+
+$ chmod 744 or alternately $ chmod +x main.swift -- need to do this to run the script from the command line, otherwise it will say permission denied
+
+We built one script that says the name typed in: (MyFirstScript). Can be found in my MyFirstSwift/main.swift file in a simple version, or alternately:
+
+#!/usr/bin/swift
+import Foundation
+let name = commandLine.arguments
+if arguments.count == 1 {
+  print("I need your name.")
+} else {
+    let name = arguments[1]
+    print("Hello, \(name)")
+}
+
+Run on command line like:
+$ ./main.swift Ginny
+* if you run without second part, will return "I need your name"
+
+When you're scripting, you'll use a lot of 
+- NSFileManager
+- command line envoronment
+- creating dirs
+- creating temp files
+- changing dirs
+- pinging internet
+- commandLine standard swift library
+- NSTask to create some kind of task
+- NSURLSession, although you can also access internet through command line curl
+
+ex. command line curl:
+from MakeRepo:
+func createRepo(with name: String) throws {
+    let process = Process // Process has also already been renamed back to CommandLine
+    process.launchPath = "/bin/bash"
+    process.arguments = [ "-c",
+        "curl -u \"{USERNAME}:{TOKEN}\"https://api.github.com/user/repos -d '{\"name\":\"\(name)\"}'""
+    ]
+    process.launch()
+    process.waitUntilExit()
+}
+performCommand() from MakeRepo fills in the template with the variables you provided
+
+To generate an executable from file: 
+    $ -c xcrun swiftc
+    $ swiftc main.swift 
+    * now you will see main and main.swift files, main being an executable
+    mv folder to your bin
+    then can run $ MySecondScript from anywhere on the desktop
